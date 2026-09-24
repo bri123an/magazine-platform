@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Article, Category, Author } from '../../lib/types';
+
+interface Props {
+  article: Article;
+  category?: Category;
+  author?: Author;
+  relatedArticles?: Article[];
+}
+
+const { article, category, author, relatedArticles = [] } = Astro.props;
+---
+
+<BaseLayout title={`${article.title} - Magazine`} description={article.excerpt}>
+  <article class="container-custom mx-auto max-w-4xl">
+    {/* Article Header */}
+    <header class="mb-8 text-center">
+      {category && (
+        <a href={`/categories/${category.slug}`} class="mb-4 inline-block">
+          <span class="rounded-full bg-primary-100 px-4 py-1 text-sm font-medium text-primary-700">
+            {category.name}
+          </span>
+        </a>
+      )}
+      <h1 class="mb-4 text-4xl font-bold text-gray-900">{article.title}</h1>
+      <div class="flex items-center justify-center gap-4 text-sm text-gray-500">
+        {author && (
+          <a href={`/authors/${author.slug}`} class="flex items-center gap-2 hover:text-gray-700">
+            <img 
+              src={author.avatar || '/default-avatar.svg'} 
+              alt={author.name}
+              class="h-8 w-8 rounded-full"
+            />
+            <span>{author.name}</span>
+          </a>
+        )}
+        <span>{new Date(article.publishedAt).toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })}</span>
+        <span>{article.readTime} min read</span>
+        {article.views && (
+          <span>{article.views.toLocaleString()} views</span>
+        )}
+      </div>
+    </header>
+
+    {/* Featured Image */}
+    {article.image && (
+      <img 
+        src={article.image} 
+        alt={article.title}
+        class="mb-8 h-96 w-full rounded-xl object-cover"
+      />
+    )}
+
+    {/* Article Content */}
+    <div class="prose prose-lg max-w-none">
+      <slot />
+    </div>
+
+    {/* Share & Related */}
+    <div class="mt-12 border-t border-gray-200 pt-8">
+      <div class="mb-8 flex items-center justify-center gap-4">
+        <span class="text-sm font-medium text-gray-700">Share this article:</span>
+        <button class="rounded-full bg-gray-100 p-2 hover:bg-gray-200" id="share-twitter">
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.193A5 5 0 011.5 2.71v.042a4.92 4.92 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.561 2.267c-1.055 0-2.046-.16-3.015-.465a13.928 13.928 0 007.548 2.216c9.142 0 14.142-7.597 14.142-14.142 0-.216-.005-.432-.014-.647A10.11 10.11 0 0024 4.57z"/>
+          </svg>
+        </button>
+      </div>
+
+      {relatedArticles.length > 0 && (
+        <div>
+          <h2 class="mb-4 text-2xl font-bold text-gray-900">Related Articles</h2>
+          <div class="grid gap-6 md:grid-cols-2">
+            {relatedArticles.slice(0, 2).map(related => (
+              <a href={`/articles/${related.slug}`} class="card overflow-hidden">
+                {related.image && (
+                  <img src={related.image} alt={related.title} class="h-32 w-full object-cover" />
+                )}
+                <div class="p-4">
+                  <h3 class="font-semibold text-gray-900">{related.title}</h3>
+                  <p class="text-sm text-gray-500">{related.excerpt}</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { Article, Category, Author } from '../lib/types';
+
+interface Props {
+  articles: Article[];
+  categories: Category[];
+  authors: Author[];
+}
+
+const { articles, categories, authors } = Astro.props;
+---
+
+<BaseLayout title="Magazine - Latest Articles" description="Discover the latest articles and insights">
+  <div class="space-y-16">
+    {/* Hero Section */}
+    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 px-6 py-20 text-center text-white sm:px-12">
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Welcome to Magazine</h1>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-primary-100">
+        Discover insightful articles on technology, design, and innovation.
+      </p>
+      <a href="/articles" class="mt-8 inline-block rounded-lg bg-white px-8 py-3 text-sm font-semibold text-primary-600 hover:bg-gray-100 transition-colors">
+        Explore Articles
+      </a>
+    </section>
+
+    {/* Featured Articles */}
+    <section class="container-custom mx-auto">
+      <h2 class="mb-8 text-3xl font-bold text-gray-900">Featured Articles</h2>
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {articles.slice(0, 6).map(article => (
+          <article class="card overflow-hidden">
+            <a href={`/articles/${article.slug}`}>
+              {article.image && (
+                <img 
+                  src={article.image} 
+                  alt={article.title}
+                  class="h-48 w-full object-cover"
+                />
+              )}
+              <div class="p-6">
+                <div class="mb-3 flex items-center gap-2">
+                  {article.category && (
+                    <span class="rounded-full bg-primary-100 px-3 py-1 text-xs font-medium text-primary-700">
+                      {article.category.name}
+                    </span>
+                  )}
+                </div>
+                <h3 class="mb-2 text-xl font-semibold text-gray-900">{article.title}</h3>
+                <p class="text-sm text-gray-600">{article.excerpt}</p>
+                <div class="mt-4 flex items-center gap-2 text-sm text-gray-500">
+                  <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                  <span>•</span>
+                  <span>{article.readTime} min read</span>
+                </div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    {/* Categories */}
+    <section class="container-custom mx-auto">
+      <h2 class="mb-8 text-3xl font-bold text-gray-900">Categories</h2>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {categories.map(category => (
+          <a 
+            href={`/categories/${category.slug}`}
+            class="card flex items-center gap-4 p-6 transition-colors hover:bg-gray-50"
+          >
+            <span class="text-2xl">{category.icon}</span>
+            <div>
+              <h3 class="font-semibold text-gray-900">{category.name}</h3>
+              <p class="text-sm text-gray-500">{category.articleCount} articles</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  article {
+    animation: fadeIn 0.5s ease-out;
+  }
+</style>
