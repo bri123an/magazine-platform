@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Category, Article } from '../../lib/types';
+
+interface Props {
+  category: Category;
+  articles: Article[];
+}
+
+const { category, articles = [] } = Astro.props;
+---
+
+<BaseLayout title={`${category.name} Articles - Magazine`} description={category.description}>
+  <div class="container-custom mx-auto">
+    <div class="mb-12 text-center">
+      <span class="mb-4 block text-5xl">{category.icon}</span>
+      <h1 class="mb-4 text-4xl font-bold text-gray-900">{category.name}</h1>
+      <p class="text-lg text-gray-600">{category.description}</p>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      {articles.map(article => (
+        <article class="card overflow-hidden">
+          <a href={`/articles/${article.slug}`}>
+            {article.image && (
+              <img src={article.image} alt={article.title} class="h-48 w-full object-cover" />
+            )}
+            <div class="p-6">
+              <h3 class="mb-2 text-xl font-semibold text-gray-900">{article.title}</h3>
+              <p class="text-sm text-gray-600">{article.excerpt}</p>
+              <div class="mt-4 flex items-center gap-2 text-sm text-gray-500">
+                <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                <span>•</span>
+                <span>{article.readTime} min read</span>
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+
+    {articles.length === 0 && (
+      <div class="py-12 text-center">
+        <p class="text-gray-500">No articles in this category yet.</p>
+      </div>
+    )}
+  </div>
+</BaseLayout>

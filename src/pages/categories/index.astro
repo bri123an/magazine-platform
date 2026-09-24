@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Category, Article } from '../../lib/types';
+
+interface Props {
+  categories: Category[];
+  featuredArticles: Article[];
+}
+
+const { categories, featuredArticles = [] } = Astro.props;
+---
+
+<BaseLayout title="Categories - Magazine" description="Browse articles by category">
+  <div class="container-custom mx-auto">
+    <div class="mb-12 text-center">
+      <h1 class="mb-4 text-4xl font-bold text-gray-900">Categories</h1>
+      <p class="text-lg text-gray-600">Explore articles organized by topic</p>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      {categories.map(category => (
+        <a href={`/categories/${category.slug}`} class="card group">
+          <div class="p-8 text-center">
+            <span class="mb-4 block text-4xl">{category.icon}</span>
+            <h2 class="mb-2 text-2xl font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
+              {category.name}
+            </h2>
+            <p class="mb-4 text-gray-600">{category.description}</p>
+            <span class="text-sm font-medium text-primary-600">
+              {category.articleCount} articles →
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    {featuredArticles.length > 0 && (
+      <section class="mt-16">
+        <h2 class="mb-8 text-3xl font-bold text-gray-900">Featured Articles</h2>
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {featuredArticles.slice(0, 6).map(article => (
+            <article class="card overflow-hidden">
+              <a href={`/articles/${article.slug}`}>
+                {article.image && (
+                  <img src={article.image} alt={article.title} class="h-48 w-full object-cover" />
+                )}
+                <div class="p-6">
+                  <h3 class="mb-2 text-xl font-semibold text-gray-900">{article.title}</h3>
+                  <p class="text-sm text-gray-600">{article.excerpt}</p>
+                  <div class="mt-3 text-sm text-gray-500">
+                    {new Date(article.publishedAt).toLocaleDateString()}
+                  </div>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</BaseLayout>

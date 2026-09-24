@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Author, Article } from '../../lib/types';
+
+interface Props {
+  author: Author;
+  articles: Article[];
+}
+
+const { author, articles = [] } = Astro.props;
+---
+
+<BaseLayout title={`${author.name} - Author - Magazine`} description={author.bio}>
+  <div class="container-custom mx-auto">
+    {/* Author Profile */}
+    <div class="mb-12 rounded-xl bg-white p-8 shadow-sm">
+      <div class="flex flex-col items-center text-center md:flex-row md:text-left">
+        <img 
+          src={author.avatar || '/default-avatar.svg'} 
+          alt={author.name}
+          class="mb-4 h-32 w-32 rounded-full object-cover ring-4 ring-gray-100 md:mb-0 md:mr-8"
+        />
+        <div>
+          <h1 class="mb-2 text-3xl font-bold text-gray-900">{author.name}</h1>
+          <p class="mb-4 text-gray-600">{author.bio || 'Contributing writer'}</p>
+          <div class="flex flex-wrap gap-4 text-sm text-gray-500">
+            <span class="flex items-center gap-1">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              {author.articleCount} articles
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Author's Articles */}
+    <h2 class="mb-6 text-2xl font-bold text-gray-900">Articles by {author.name}</h2>
+    <div class="grid gap-8 md:grid-cols-2">
+      {articles.map(article => (
+        <article class="card overflow-hidden">
+          <a href={`/articles/${article.slug}`}>
+            {article.image && (
+              <img src={article.image} alt={article.title} class="h-48 w-full object-cover" />
+            )}
+            <div class="p-6">
+              <h3 class="mb-2 text-xl font-semibold text-gray-900">{article.title}</h3>
+              <p class="text-sm text-gray-600">{article.excerpt}</p>
+              <div class="mt-4 flex items-center gap-2 text-sm text-gray-500">
+                <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                <span>•</span>
+                <span>{article.readTime} min read</span>
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+
+    {articles.length === 0 && (
+      <div class="py-12 text-center">
+        <p class="text-gray-500">No articles published yet.</p>
+      </div>
+    )}
+  </div>
+</BaseLayout>
